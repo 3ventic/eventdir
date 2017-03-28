@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<title>Twitch Events - Current and Upcoming</title>
+<style>
+.event {
+    position: relative;
+    background: #f6f6ff;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    width: 360px;
+    height: 482.5px;
+    padding: 0;
+    box-shadow: 2px 2px 2px black;
+    color: #999;
+    float: left;
+    margin: 10px;
+}
+.event:hover {
+    box-shadow: 2px 2px 3px 4px #6441A4;
+    cursor: alias;
+}
+.bg {
+    width: 360px;
+    height: 202.5px;
+}
+.game {
+    width: 52px;
+    height: 72px;
+    position: absolute;
+    top: 212.5px;
+    right: 10px;
+}
+.info {
+    margin: 10px;
+    width: 278px;
+    height: 63px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+span {
+    display: inline-block;
+    max-width: 278px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.descbox {
+    margin: 10px;
+    width: 340px;
+    height: 183px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap;
+    color: #666;
+}
+.title {
+    font-weight: bold;
+}
+.ch {
+    font-weight: 600;
+}
+.ch, .title, .start {
+    color: #333;
+}
+a {
+    text-decoration: none;
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+</style>
+<template id="tmpl">
+    <div class="event">
+        <a class="link" href="">
+            <img class="bg" src="" alt="background">
+            <p class="info">
+                <span class="title"></span><br>
+                <span>by</span> <span class="ch"></span><br>
+                <span class="starting">starting</span> <span class="start"></span><br>
+                <div class="descbox">
+                </div>
+            </p>
+            <img class="game" src="" alt="game">
+        </a>
+    </div>
+</template>
+<div id="events">
+</div>
+<script>
+if ('content' in document.createElement('template') && typeof(window.fetch) === 'function') {
+    var parent = document.getElementById('events');
+    function addEvent(evt) {
+        var template = document.getElementById('tmpl');
+        template.content.querySelector('.bg').src = evt.cover_image_url.replace('{width}', '640').replace('{height}', '360');
+        template.content.querySelector('.title').textContent = evt.title;
+        template.content.querySelector('.ch').textContent = evt.channel.display_name;
+        template.content.querySelector('.start').textContent = (new Date(evt.start_time)).toLocaleString();
+        template.content.querySelector('.descbox').textContent = evt.description;
+        template.content.querySelector('.game').src = evt.game.box.small;
+        template.content.querySelector('.link').href = 'https://www.twitch.tv/events/' + evt._id;
+        
+        var clone = document.importNode(template.content, true);
+        parent.appendChild(clone);
+    }
+    fetch('api/events')
+    .then(response => response.json())
+    .then(events => {
+        for (var key in events) {
+            if (events.hasOwnProperty(key)) {
+                addEvent(events[key]);
+            }
+        }
+        alert(Object.keys(events).length + ' ongoing or planned events loaded');
+    });
+} else {
+    alert('Browser not supported. Sorry');
+}
+</script>
+<script src="/analytics.js" async></script>
