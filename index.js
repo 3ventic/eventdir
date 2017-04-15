@@ -8,6 +8,7 @@ const request = require('request').defaults({
 });
 const fs = require('fs');
 const launchParams = require('./start.js');
+const shouldLog = require('./filterfunction.js');
 
 var events = launchParams.events;
 var evtId = launchParams.last;
@@ -25,7 +26,7 @@ setInterval(_ => {
         } else if (json.status == 404) {
             if (nfs > 100) {
                 nfs = 0;
-                evtId = lfid;
+                evtId = lfid + 1;
             } else {
                 nfs += 1;
             }
@@ -33,6 +34,9 @@ setInterval(_ => {
             lfid = parseInt(json._id);
             console.log(json._id);
             events[json._id] = json;
+            if (shouldLog(json)) {
+                fs.appendFile('./events.log', JSON.stringify(json) + '\n', { encoding: 'utf8' }, err => err && console.error('fs', err));
+            }
         } else {
             console.error('Unknown json', json);
         }

@@ -1,2 +1,4 @@
 node_modules/
 start.js
+filterfunction.js
+events.log*
