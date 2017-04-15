@@ -32,10 +32,12 @@ setInterval(_ => {
             }
         } else if (json._id) {
             lfid = parseInt(json._id);
-            console.log(json._id);
             events[json._id] = json;
             if (shouldLog(json)) {
                 fs.appendFile('./events.log', JSON.stringify(json) + '\n', { encoding: 'utf8' }, err => err && console.error('fs', err));
+                console.log('BAD', json._id);
+            } else {
+                console.log('NEUTRAL', json._id);
             }
         } else {
             console.error('Unknown json', json);
